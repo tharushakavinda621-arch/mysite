@@ -1,121 +1,71 @@
-<!DOCTYPE html>
-<html lang="si">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Unlock Link</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <h2>✅ Your Link is Ready</h2>
-      <p class="muted">Complete the actions and unlock the link</p>
-
-      <div class="step" id="s1">
-        <div>
-          <div class="title">ADD එක බලලා BACK වෙන්න</div>
-          <div class="muted small">Step 1</div>
-        </div>
-        <button class="btn" id="btn1">Open</button>
-      </div>
-
-      <div class="step" id="s2">
-        <div>
-          <div class="title">ADD එක බලලා BACK වෙන්න</div>
-          <div class="muted small">Step 2</div>
-        </div>
-        <button class="btn" id="btn2">Open</button>
-      </div>
-
-      <div class="progress" id="prog">Steps Completed 0/2</div>
-
-      <button class="btn green" id="unlock" disabled>Get Your Link</button>
-
-      <div class="row">
-        <button class="btn ghost" id="reset">Reset</button>
-      </div>
-    </div>
-  </div>
-
 <script>
-  // ====== REPLACE THESE 3 ======
   const AD_LINK_1 = "https://omg10.com/4/10683927";
   const AD_LINK_2 = "https://omg10.com/4/10683927";
-  const FINAL_LINK = "https://t.me/SL_CYBER_VPN";
-  // ============================
+  const FINAL_LINK = "https://sub2unlock.me/Lbv1kr3";
 
-  // “ad බලලා back” feel එකට: tab එකට ගිහිං ආවම + 최소 seconds එකක් ගියාම step complete කියලා mark කරනවා
   const MIN_SECONDS_ON_AD = 6;
+  const key = "u_state_v2";
 
-  const stateKey = "u_state_v1";
   const now = () => Date.now();
 
-  function loadState(){
-    try { return JSON.parse(sessionStorage.getItem(stateKey) || "{}"); }
+  function load() {
+    try { return JSON.parse(sessionStorage.getItem(key) || "{}"); }
     catch { return {}; }
   }
-  function saveState(s){ sessionStorage.setItem(stateKey, JSON.stringify(s)); }
+  function save(s) { sessionStorage.setItem(key, JSON.stringify(s)); }
 
-  function countDone(s){
-    return (s.done1 ? 1 : 0) + (s.done2 ? 1 : 0);
-  }
+  function doneCount(s){ return (s.done1?1:0)+(s.done2?1:0); }
 
   function render(){
-    const s = loadState();
-    document.getElementById("prog").textContent = Steps Completed ${countDone(s)}/2;
+    const s = load();
+    document.getElementById("prog").textContent = Steps Completed ${doneCount(s)}/2;
+    document.getElementById("unlock").disabled = !(s.done1 && s.done2);
     document.getElementById("s1").classList.toggle("done", !!s.done1);
     document.getElementById("s2").classList.toggle("done", !!s.done2);
-    document.getElementById("unlock").disabled = !(s.done1 && s.done2);
   }
 
-  // step flow: open ad -> user returns (focus) -> if enough time passed -> mark done
-  let pendingStep = null;
-
-  function startStep(stepNo){
-    const s = loadState();
-    pendingStep = stepNo;
-    s[start${stepNo}] = now();
-    saveState(s);
-
-    const url = stepNo === 1 ? AD_LINK_1 : AD_LINK_2;
-    window.open(url, "_blank"); // user can come back easily
-  }
-
-  function tryCompletePending(){
-    if(!pendingStep) return;
-    const s = loadState();
-    const started = s[start${pendingStep}] || 0;
-    const elapsed = (now() - started) / 1000;
-
-    if(elapsed >= MIN_SECONDS_ON_AD){
-      s[done${pendingStep}] = true;
-      saveState(s);
-      pendingStep = null;
-      render();
+  // ✅ Back කරලා ආවම auto complete
+  function autoComplete(){
+    const s = load();
+    // step1 started but not done
+    if(s.start1 && !s.done1){
+      const elapsed = (now() - s.start1)/1000;
+      if(elapsed >= MIN_SECONDS_ON_AD) s.done1 = true;
     }
+    if(s.start2 && !s.done2){
+      const elapsed = (now() - s.start2)/1000;
+      if(elapsed >= MIN_SECONDS_ON_AD) s.done2 = true;
+    }
+    save(s);
+    render();
   }
 
-  // When user comes back to this tab
-  window.addEventListener("focus", tryCompletePending);
-  document.addEventListener("visibilitychange", () => {
-    if(!document.hidden) tryCompletePending();
-  });
+  function goStep(step){
+    const s = load();
+    s["start"+step] = now();
+    save(s);
 
-  document.getElementById("btn1").onclick = () => startStep(1);
-  document.getElementById("btn2").onclick = () => startStep(2);
+    const url = step === 1 ? AD_LINK_1 : AD_LINK_2;
+
+    // ✅ Same tab navigate (popup block නැහැ)
+    window.location.href = url;
+  }
+
+  document.getElementById("btn1").onclick = () => goStep(1);
+  document.getElementById("btn2").onclick = () => goStep(2);
 
   document.getElementById("unlock").onclick = () => {
-    window.open(FINAL_LINK, "_blank");
+    window.location.href = FINAL_LINK;
   };
 
   document.getElementById("reset").onclick = () => {
-    sessionStorage.removeItem(stateKey);
-    pendingStep = null;
+    sessionStorage.removeItem(key);
     render();
+    alert("Reset done");
   };
 
-  render();
+  // page load එකේ autoComplete check
+  autoComplete();
+
+  // user back වුනාම page reload වෙනවා, ඒකෙන් autoComplete run වෙනවා
 </script>
-</body>
-</html>
