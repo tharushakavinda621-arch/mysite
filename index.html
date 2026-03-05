@@ -1,34 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Unlock Page</title>
 </head>
 
 <body style="text-align:center;margin-top:100px;font-family:Arial;">
 
-<h2>Complete both steps to unlock link</h2>
+<h2>Complete Both Steps to Unlock</h2>
 
 <br>
 
 <a href="task1.html">
-<button style="padding:15px 30px;font-size:18px;">
-Step 1
-</button>
+<button style="padding:15px 30px;font-size:18px;">Step 1</button>
 </a>
 
 <br><br>
 
 <a href="task2.html">
-<button style="padding:15px 30px;font-size:18px;">
-Step 2
-</button>
+<button style="padding:15px 30px;font-size:18px;">Step 2</button>
 </a>
 
 <br><br>
 
-<button disabled id="unlockBtn">
+<button id="unlockBtn" disabled style="padding:15px 30px;font-size:18px;">
 Unlock Link
 </button>
+
+<script>
+
+const FINAL_LINK = "https://t.me/SL_CYBER_VPN";
+
+function checkUnlock(){
+ if(localStorage.getItem("task1_done")=="1" && localStorage.getItem("task2_done")=="1"){
+   document.getElementById("unlockBtn").disabled=false;
+ }
+}
+
+checkUnlock();
+
+document.getElementById("unlockBtn").onclick=function(){
+ window.open(FINAL_LINK,"_blank");
+}
+
+</script>
 
 </body>
 </html>
