@@ -1,0 +1,16 @@
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0f1220;color:#e9ecff}
+.wrap{max-width:520px;margin:0 auto;padding:22px}
+.card{background:#151a2e;border:1px solid #232a4a;border-radius:16px;padding:18px}
+h2{margin:0 0 6px 0}
+.muted{opacity:.8;margin:0 0 12px 0}
+.small{font-size:12px}
+.step{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px;border-radius:14px;background:#10162a;border:1px solid #242e57;margin:10px 0}
+.step.done{border-color:#2f6; box-shadow:0 0 0 1px rgba(34,255,102,.15) inset}
+.title{font-weight:700}
+.btn{border:0;border-radius:12px;padding:12px 14px;font-weight:700;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.green{background:#33e06e}
+.btn.ghost{background:#2a335a;color:#fff}
+.progress{margin:12px 0;font-weight:700}
+.row{margin-top:10px}
