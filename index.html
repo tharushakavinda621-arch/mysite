@@ -12,13 +12,13 @@
 <br>
 
 <a href="task1.html">
-<button style="padding:15px 30px;font-size:18px;">Step 1</button>
+  <button style="padding:15px 30px;font-size:18px;">Step 1</button>
 </a>
 
 <br><br>
 
 <a href="task2.html">
-<button style="padding:15px 30px;font-size:18px;">Step 2</button>
+  <button style="padding:15px 30px;font-size:18px;">Step 2</button>
 </a>
 
 <br><br>
@@ -27,22 +27,32 @@
 Unlock Link
 </button>
 
-<script>
+<br><br>
+<button id="resetBtn" style="padding:10px 18px;">Reset</button>
 
+<script>
 const FINAL_LINK = "https://t.me/SL_CYBER_VPN";
 
-function checkUnlock(){
- if(localStorage.getItem("task1_done")=="1" && localStorage.getItem("task2_done")=="1"){
-   document.getElementById("unlockBtn").disabled=false;
- }
+function refreshUnlock(){
+  const t1 = localStorage.getItem("task1_done") === "1";
+  const t2 = localStorage.getItem("task2_done") === "1";
+  document.getElementById("unlockBtn").disabled = !(t1 && t2);
 }
 
-checkUnlock();
+// page load + every time you come back (simple polling)
+refreshUnlock();
+setInterval(refreshUnlock, 700);
 
-document.getElementById("unlockBtn").onclick=function(){
- window.open(FINAL_LINK,"_blank");
-}
+document.getElementById("unlockBtn").onclick = () => {
+  window.open(FINAL_LINK, "_blank");
+};
 
+document.getElementById("resetBtn").onclick = () => {
+  localStorage.removeItem("task1_done");
+  localStorage.removeItem("task2_done");
+  refreshUnlock();
+  alert("Reset done.");
+};
 </script>
 
 </body>
