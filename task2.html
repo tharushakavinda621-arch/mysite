@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Step 2</title>
+</head>
+
+<body style="text-align:center;margin-top:100px;font-family:Arial;">
+
+<h2>Step 2</h2>
+
+<p>Button එක click කරලා second link එක open කරන්න</p>
+
+<button id="open" style="padding:15px 30px;font-size:18px;">
+Open Link 2
+</button>
+
+<br><br>
+
+<a href="index.html">
+<button>Back to Main</button>
+</a>
+
+<script>
+const DIRECT2 = "https://omg10.com/4/10683927";
+
+document.getElementById("open").onclick = function(){
+  window.open(DIRECT2,"_blank");
+  localStorage.setItem("task2_done","1");
+  alert("Step 2 Done! Back to main page.");
+};
+</script>
+
+</body>
+</html>
