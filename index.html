@@ -1,59 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="si">
 <head>
-<meta charset="UTF-8">
-<title>Unlock Page</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unlock Link</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2>✅ Your Link is Ready</h2>
+      <p class="muted">Complete the actions and unlock the link</p>
 
-<body style="text-align:center;margin-top:100px;font-family:Arial;">
+      <div class="step" id="s1">
+        <div>
+          <div class="title">ADD එක බලලා BACK වෙන්න</div>
+          <div class="muted small">Step 1</div>
+        </div>
+        <button class="btn" id="btn1">Open</button>
+      </div>
 
-<h2>Complete Both Steps to Unlock</h2>
+      <div class="step" id="s2">
+        <div>
+          <div class="title">ADD එක බලලා BACK වෙන්න</div>
+          <div class="muted small">Step 2</div>
+        </div>
+        <button class="btn" id="btn2">Open</button>
+      </div>
 
-<br>
+      <div class="progress" id="prog">Steps Completed 0/2</div>
 
-<a href="task1.html">
-  <button style="padding:15px 30px;font-size:18px;">Step 1</button>
-</a>
+      <button class="btn green" id="unlock" disabled>Get Your Link</button>
 
-<br><br>
-
-<a href="task2.html">
-  <button style="padding:15px 30px;font-size:18px;">Step 2</button>
-</a>
-
-<br><br>
-
-<button id="unlockBtn" disabled style="padding:15px 30px;font-size:18px;">
-Unlock Link
-</button>
-
-<br><br>
-<button id="resetBtn" style="padding:10px 18px;">Reset</button>
+      <div class="row">
+        <button class="btn ghost" id="reset">Reset</button>
+      </div>
+    </div>
+  </div>
 
 <script>
-const FINAL_LINK = "https://t.me/SL_CYBER_VPN";
+  // ====== REPLACE THESE 3 ======
+  const AD_LINK_1 = "https://omg10.com/4/10683927";
+  const AD_LINK_2 = "https://omg10.com/4/10683927";
+  const FINAL_LINK = "https://t.me/SL_CYBER_VPN";
+  // ============================
 
-function refreshUnlock(){
-  const t1 = localStorage.getItem("task1_done") === "1";
-  const t2 = localStorage.getItem("task2_done") === "1";
-  document.getElementById("unlockBtn").disabled = !(t1 && t2);
-}
+  // “ad බලලා back” feel එකට: tab එකට ගිහිං ආවම + 최소 seconds එකක් ගියාම step complete කියලා mark කරනවා
+  const MIN_SECONDS_ON_AD = 6;
 
-// page load + every time you come back (simple polling)
-refreshUnlock();
-setInterval(refreshUnlock, 700);
+  const stateKey = "u_state_v1";
+  const now = () => Date.now();
 
-document.getElementById("unlockBtn").onclick = () => {
-  window.open(FINAL_LINK, "_blank");
-};
+  function loadState(){
+    try { return JSON.parse(sessionStorage.getItem(stateKey) || "{}"); }
+    catch { return {}; }
+  }
+  function saveState(s){ sessionStorage.setItem(stateKey, JSON.stringify(s)); }
 
-document.getElementById("resetBtn").onclick = () => {
-  localStorage.removeItem("task1_done");
-  localStorage.removeItem("task2_done");
-  refreshUnlock();
-  alert("Reset done.");
-};
+  function countDone(s){
+    return (s.done1 ? 1 : 0) + (s.done2 ? 1 : 0);
+  }
+
+  function render(){
+    const s = loadState();
+    document.getElementById("prog").textContent = Steps Completed ${countDone(s)}/2;
+    document.getElementById("s1").classList.toggle("done", !!s.done1);
+    document.getElementById("s2").classList.toggle("done", !!s.done2);
+    document.getElementById("unlock").disabled = !(s.done1 && s.done2);
+  }
+
+  // step flow: open ad -> user returns (focus) -> if enough time passed -> mark done
+  let pendingStep = null;
+
+  function startStep(stepNo){
+    const s = loadState();
+    pendingStep = stepNo;
+    s[start${stepNo}] = now();
+    saveState(s);
+
+    const url = stepNo === 1 ? AD_LINK_1 : AD_LINK_2;
+    window.open(url, "_blank"); // user can come back easily
+  }
+
+  function tryCompletePending(){
+    if(!pendingStep) return;
+    const s = loadState();
+    const started = s[start${pendingStep}] || 0;
+    const elapsed = (now() - started) / 1000;
+
+    if(elapsed >= MIN_SECONDS_ON_AD){
+      s[done${pendingStep}] = true;
+      saveState(s);
+      pendingStep = null;
+      render();
+    }
+  }
+
+  // When user comes back to this tab
+  window.addEventListener("focus", tryCompletePending);
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden) tryCompletePending();
+  });
+
+  document.getElementById("btn1").onclick = () => startStep(1);
+  document.getElementById("btn2").onclick = () => startStep(2);
+
+  document.getElementById("unlock").onclick = () => {
+    window.open(FINAL_LINK, "_blank");
+  };
+
+  document.getElementById("reset").onclick = () => {
+    sessionStorage.removeItem(stateKey);
+    pendingStep = null;
+    render();
+  };
+
+  render();
 </script>
-
 </body>
 </html>
