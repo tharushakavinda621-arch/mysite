@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Step 1</title>
 </head>
 
@@ -8,21 +9,23 @@
 
 <h2>Step 1</h2>
 
-<p>Click the button below</p>
-
-<a href="https://omg10.com/4/10683927" target="_blank">
-<button style="padding:15px 30px;font-size:18px;">
-Open Link
+<button onclick="openLink()" style="padding:15px 30px;font-size:18px;">
+Open Link 1
 </button>
-</a>
 
 <br><br>
 
-<a href="index.html">
-<button>
-Back
-</button>
-</a>
+<a href="index.html"><button>Back</button></a>
+
+<script>
+
+function openLink(){
+localStorage.setItem("task1_done","1");
+window.open("https://omg10.com/4/10683927","_blank");
+alert("Step 1 Done! Go back.");
+}
+
+</script>
 
 </body>
 </html>
